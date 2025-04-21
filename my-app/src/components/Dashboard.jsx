@@ -1,49 +1,89 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import DateSelector from "./DateSelector";
 import DailyCard from "./DailyCard";
 import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm";
+import { editEntry, getEntriesByDate, postEntry } from "../api";
 
-
-const initialCards = [
-    { id: 1, user: "Fentanetanel", needsHelp: false, helpAccepted: null, helperName: "", yesterday:"cummed", today: "raped" },
-    { id: 2, user: "Ori Ramos", needsHelp: true, helpAccepted: null, helperName: "Fentanetanel", yesterday:"cummed", today: "raped"  },
-    { id: 3, user: "Ori The Cool", needsHelp: true, helpAccepted: true, helperName: "Yeskin the king" },
-    { id: 4, user: "Yeskin the king", needsHelp: false, helpAccepted: null, helperName: "" },
-    { id: 5, user: "Grandpa", needsHelp: true, helpAccepted: true, helperName: "Yeskin the king" },
-    { id: 6, user: "Matan", needsHelp: true, helpAccepted: null, helperName: "Anybody" },
-];
-
-function Dashboard({ user, onLogout }) {
-    const [cards, setCards] = useState(initialCards);
+function Dashboard({ user, onLogout, users }) {
+    const [cards, setCards] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [editingCard, setEditingCard] = useState(null);
 
-    const handleHelpResponse = (cardId, accepted, fromAnyone = false) => {
-        setCards((prevCards) =>
-            prevCards.map((card) =>
-                card.id === cardId
-                    ? {
-                        ...card,
-                        helpAccepted: accepted,
-                        needsHelp: accepted ? false : card.needsHelp,
-                        helperName: accepted
-                            ? fromAnyone
-                                ? user
-                                : card.helperName
-                            : "",
-                    }
-                    : card
-            )
-        );
+
+    const fetchEntriesByDate = async () => {
+        const cards = await getEntriesByDate(selectedDate)
+        setCards(cards)
+    }
+
+    useEffect(() => {
+        fetchEntriesByDate()
+    }, [selectedDate]);
+
+    const goToPreviousDay = () => {
+        setSelectedDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setDate(newDate.getDate() - 1);
+            return newDate;
+        });
     };
 
-    const handleSaveCard = (newCard) => {
-        setCards([...cards, newCard]);
+    const goToNextDay = () => {
+        setSelectedDate(prev => {
+            const newDate = new Date(prev);
+            newDate.setDate(newDate.getDate() + 1);
+            return newDate;
+        });
+    };
+
+    const handleHelpResponse = async (cardId, accepted, fromAnyone = false, actual_helper) => {
+        const originalCard = cards.find((c) => c.id === cardId);
+        if (!originalCard) return;
+
+        const { id, ...cardDataWithoutId } = originalCard;
+
+        const updatedCard = {
+            ...cardDataWithoutId,
+            help_accepted: accepted,
+            needs_help: accepted ? false : true,
+            helper_name: actual_helper
+                ? (fromAnyone ? user : originalCard.helper_name)
+                : "Anybody",
+            denied_helpers: accepted
+                ? originalCard.denied_helpers || []
+                : [...(originalCard.denied_helpers || []), user],
+        };
+
+
+
+        try {
+            await editEntry(cardId, updatedCard);
+            setCards((prevCards) =>
+                prevCards.map((card) =>
+                    card.id === cardId ? { ...card, ...updatedCard } : card
+                )
+            );
+        } catch (err) {
+            console.error("Failed to update help status:", err);
+        }
+    };
+
+    const handleSaveCard = async (newEntry) => {
+        if (editingCard) {
+            await editEntry(editingCard.id, newEntry);
+        } else {
+            await postEntry(newEntry);
+        }
+        setEditingCard(null);
         setIsFormOpen(false);
+        fetchEntriesByDate();
     };
+    
 
     const handleDiscardCard = () => {
         setIsFormOpen(false);
+        setEditingCard(null);
     };
 
     return (
@@ -56,33 +96,45 @@ function Dashboard({ user, onLogout }) {
             </div>
 
             <div className="dashboard-container">
-                <DateSelector />
-                <button className="post-card-btn" onClick={() => setIsFormOpen(true)}>
-                    Post Daily Card
-                </button>
+                <DateSelector
+                    date={selectedDate}
+                    onPrev={goToPreviousDay}
+                    onNext={goToNextDay}
+                />
+                {new Date().toDateString() === selectedDate.toDateString() &&
+                    (<button className="post-card-btn" onClick={() => setIsFormOpen(true)}>
+                        Post Daily Card
+                    </button>)}
 
                 {isFormOpen && (
                     <PostDailyCardForm
                         onSave={handleSaveCard}
                         onDiscard={handleDiscardCard}
                         user={user}
+                        users={users}
+                        card={editingCard}
                     />
                 )}
 
                 <div className="card-grid">
-                    {cards.map((card) => (
+                    {cards?.map((card) => (
                         <DailyCard
                             key={card.id}
-                            user={card.user}
-                            needsHelp={card.needsHelp}
-                            helpAccepted={card.helpAccepted}
-                            helperName={card.helperName}
+                            username={card.username}
+                            needs_help={card.needs_help}
+                            help_accepted={card.help_accepted}
+                            helper_name={card.helper_name}
                             currentUser={user}
-                            onHelpResponded={(accepted, fromAnyone) =>
-                                handleHelpResponse(card.id, accepted, fromAnyone)
+                            onHelpResponded={(accepted, fromAnyone, actual_helper) =>
+                                handleHelpResponse(card.id, accepted, fromAnyone, actual_helper)
                             }
                             yesterday={card.yesterday}
                             today={card.today}
+                            denied_helpers={card.denied_helpers}
+                            onEdit={() => {
+                                setEditingCard(card);  // Set the card to be edited
+                                setIsFormOpen(true);   // Open the form
+                            }}
                         />
                     ))}
                 </div>
