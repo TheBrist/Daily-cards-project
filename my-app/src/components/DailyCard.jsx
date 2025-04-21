@@ -13,7 +13,7 @@ const statusLabels = {
     accepted: "Help Accepted",
 };
 
-function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted, currentUser, onHelpResponded }) {
+function DailyCard({ username, yesterday, today, needs_help, helper_name, help_accepted, currentUser, onHelpResponded, denied_helpers, onEdit }) {
     const [statusKey, setStatusKey] = useState("okay");
     const [showPopup, setShowPopup] = useState(false);
     const [isOverflowing, setIsOverflowing] = useState(false);
@@ -21,20 +21,23 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
     const cardRef = useRef(null);
 
     useEffect(() => {
-        if (!needsHelp) {
-            setStatusKey("okay");
-        } else if (needsHelp && helpAccepted === null) {
-            setStatusKey("waiting");
-        } else if (needsHelp && helpAccepted) {
+        if (help_accepted) {
             setStatusKey("accepted");
         }
-    }, [needsHelp, helpAccepted]);
+        else if (!needs_help) {
+            setStatusKey("okay");
+        }
+        else if (needs_help && !help_accepted) {
+            setStatusKey("waiting");
+        }
+
+    }, [needs_help, help_accepted]);
 
     useEffect(() => {
         const checkOverflow = () => {
             if (cardRef.current) {
                 const height = cardRef.current.scrollHeight;
-                const baseHeight = 200; // Estimate of base height
+                const baseHeight = 200;
                 setIsOverflowing(height > baseHeight * 1.5);
             }
         };
@@ -42,9 +45,9 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
     }, [yesterday, today]);
 
     const handleAccept = () => {
-        const fromAnyone = !helperName;
+        const fromAnyone = helper_name === "Anybody";
         setStatusKey("accepted");
-        onHelpResponded(true, fromAnyone);
+        onHelpResponded(true, fromAnyone, username);
     };
 
     const handleDeny = () => {
@@ -52,7 +55,7 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
         onHelpResponded(false);
     };
 
-    const isCurrentUserBeingAsked = needsHelp && currentUser === helperName;
+    const isCurrentUserBeingAsked = needs_help && ((helper_name === "Anybody" && currentUser !== username) || currentUser === helper_name);
 
     return (
         <>
@@ -62,9 +65,24 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
                 onClick={() => setShowPopup(true)}
                 ref={cardRef}
             >
+
                 <div className="card-header">
-                    <h3>{user}</h3>
+                    <h3>{username}</h3>
                     <span className={`status status-${statusKey}`}>{statusLabels[statusKey]}</span>
+
+                    {currentUser === username && (
+                        <div className="edit-icon-container">
+                            <button
+                                className="edit-button"
+                                onClick={(e) => {
+                                    e.stopPropagation(); // Prevent popup
+                                    onEdit();
+                                }}
+                            >
+                                ✏️ Edit
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 <div className="card-section">
@@ -77,15 +95,22 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
                     <p>{today}</p>
                 </div>
 
-                {needsHelp && helperName && helpAccepted === null && (
+                {needs_help && !help_accepted && (
                     <div className="card-section help">
                         <strong>Needs help from:</strong>
-                        <p>{helperName}</p>
+                        <p>{helper_name}</p>
+                    </div>
+                )}
+
+                {!needs_help && help_accepted && (
+                    <div className="card-section help-accepted">
+                        <strong>Being helped by:</strong>
+                        <p>{helper_name}</p>
                     </div>
                 )}
 
 
-                {needsHelp && helperName && helpAccepted === null && (isCurrentUserBeingAsked || helperName === "Anybody") && (
+                {isCurrentUserBeingAsked && (
                     <div className="help-actions-sticky">
                         <button className="accept-btn" onClick={handleAccept}>
                             Accept
@@ -99,13 +124,16 @@ function DailyCard({ user, yesterday, today, needsHelp, helperName, helpAccepted
                 {isOverflowing && <div className="card-expand-overlay">Click to view full</div>}
             </div>
 
+
+
+
             {showPopup && (
                 <div className="popup-overlay" onClick={() => setShowPopup(false)}>
                     <div className="popup-card" onClick={(e) => e.stopPropagation()}>
-                        <h3>{user}</h3>
+                        <h3>{username}</h3>
                         <p><strong>Yesterday:</strong> {yesterday}</p>
                         <p><strong>Today:</strong> {today}</p>
-                        {needsHelp && <p><strong>Needs help from:</strong> {helperName}</p>}
+                        {needs_help && <p><strong>Needs help from:</strong> {helper_name}</p>}
                         <button onClick={() => setShowPopup(false)}>Close</button>
                     </div>
                 </div>
