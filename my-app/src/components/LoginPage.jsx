@@ -1,16 +1,26 @@
-import React, { useState } from "react";
-import users from "../users";
+import React, { useState, useEffect } from "react";
+import { getUsersPass } from "../api"
 import "./LoginPage.css";
 
 function LoginPage({ onLogin }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [users, setUsers] = useState(null)
+
+  const setUsersPass = async () => {
+    const users = await getUsersPass()
+    setUsers(users)
+  }
+
+  useEffect(() => {
+    setUsersPass()
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const user = users.find(
-      (u) => u.name === name && u.password === password
+      (u) => u.name === name && u.pass === password
     );
     if (user) {
       localStorage.setItem("currentUser", name);
