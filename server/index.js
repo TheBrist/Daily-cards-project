@@ -1,3 +1,4 @@
+const pool = require('./db/connection')
 const express = require('express');
 const cors = require('cors');
 const PORT = process.env.PORT || 8080;
@@ -29,78 +30,176 @@ app.listen(PORT, () => {
     console.log(`Server listening on port ${PORT}`)
 })
 
-let users = [
-    'Fentanetanel',
-    'Ori Ramos',
-    'Ori The Cool',
-    'Yeskin the king',
-    'Grandpa',
-    'Matan',
-]
 
-let entries = [
-    {
-        id: 1,
-        userName: 'Fentanetanel',
-        date: '2025-04-20',
-        yesterday: 'Worked on dashboard',
-        today: 'Write Terraform',
-
-    },
-    {
-        id: 2,
-        userName: 'Ori Ramos',
-        date: '2025-04-20',
-        yesterday: 'Wrote tests',
-        today: 'Fix UI bugs',
-    },
-];
-
-app.get('/api/users', (req, res) => {
-    res.json(users);
+app.get('/api/userspass', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM users');
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error fetching users with passwords:', error);
+        res.status(500).json({ error: 'Server error fetching users' });
+    }
 });
 
-app.get('/api/users/:name', (req, res) => {
+app.get('/api/usernames', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT name FROM users');
+        const usernames = result.rows.map(row => row.name);
+        res.json(usernames);
+    } catch (error) {
+        console.error('Error fetching usernames:', error);
+        res.status(500).json({ error: 'Server error fetching usernames' });
+    }
+});
+
+app.get('/api/users/:name', async (req, res) => {
     const { name } = req.params;
-    if (users.includes(name)) {
-        res.json({ name });
-    } else {
-        res.status(404).json({ error: 'User not found' });
+    try {
+        const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
+        if (result.rows.length > 0) {
+            res.json(result.rows[0]);
+        } else {
+            res.status(404).json({ error: 'User not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Server error fetching user' });
     }
 });
 
-app.get('/api/entries', (req, res) => {
-    const { date, userName } = req.query;
 
-    let result = entries;
-    if (date) result = result.filter(entry => entry.date === date);
-    if (userName) result = result.filter(entry => entry.userName === userName);
+app.get('/api/entries/:date', async (req, res) => {
+    const { date } = req.params;
+    if (!date) return res.status(400).send("Date is required");
 
-    res.json(result);
-});
+    try {
+        const query = `
+        SELECT entries.*
+        FROM entries
+        WHERE entries.date = $1
+      `;
 
-app.post('/api/entries', (req, res) => {
-    const newEntry = {
-        id: parseInt(Math.random() * 10000),
-        ...req.body,
-    };
-    entries.push(newEntry);
-    res.status(201).json(newEntry);
-});
-
-app.put('/api/entries/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    const index = entries.findIndex(e => e.id === id);
-    if (index !== -1) {
-      entries[index] = { ...entries[index], ...req.body };
-      res.json(entries[index]);
-    } else {
-      res.status(404).json({ error: 'Entry not found' });
+        const result = await pool.query(query, [date]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error fetching entries:", err);
+        res.status(500).send("Server error");
     }
-  });
-  
-  app.delete('/api/entries/:id', (req, res) => {
-    const id = parseInt(req.params.id);
-    entries = entries.filter(e => e.id !== id);
-    res.status(204).send();
-  });
+});
+
+
+app.post('/api/entries', async (req, res) => {
+    const {
+        username,
+        yesterday,
+        today,
+        needs_help,
+        help_accepted,
+        helper_name,
+        date,
+    } = req.body;
+
+    try {
+        const query = `
+        INSERT INTO entries (
+          username, yesterday, today,
+          needs_help, help_accepted, helper_name, date
+        )
+        VALUES ($1, $2, $3, $4, $5, $6, $7)
+        RETURNING *;
+      `;
+        const values = [
+            username,
+            yesterday,
+            today,
+            needs_help,
+            help_accepted,
+            helper_name,
+            date,
+        ];
+
+        const result = await pool.query(query, values);
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error("Error inserting entry:", err);
+        res.status(500).send("Server error");
+    }
+});
+
+app.put('/api/entries/:id', async (req, res) => {
+    const { id } = req.params;
+    const {
+        date,
+        help_accepted,
+        username,
+        yesterday,
+        today,
+        needs_help,
+        helper_name,
+        denied_helpers,
+    } = req.body;
+
+    try {
+        const query = `
+        UPDATE entries
+        SET
+          username = COALESCE($1, username),
+          date = COALESCE($2::date, date),
+          yesterday = COALESCE($3, yesterday),
+          today = COALESCE($4, today),
+          needs_help = COALESCE($5, needs_help),
+          help_accepted = COALESCE($6, help_accepted),
+          helper_name = COALESCE($7, helper_name)
+          denied_helpers = COALESCE($8, denied_helpers)
+        WHERE id = $8
+        RETURNING *;
+      `;
+
+      const dateObj = date ? new Date(date) : null;
+      if (dateObj) {
+          dateObj.setUTCDate(dateObj.getUTCDate() + 1); // Add one day in UTC
+      }
+      
+      const values = [
+          username,
+          dateObj ? dateObj.toISOString().split("T")[0] : null,
+          yesterday,
+          today,
+          needs_help,
+          help_accepted,
+          helper_name,
+          denied_helpers,
+          Number(id),
+      ];
+      
+            
+        const result = await pool.query(query, values);
+        console.log(values);
+        if (result.rows.length === 0) {
+            res.status(404).json({ error: 'Entry not found' });
+        } else {
+            res.json(result.rows[0]);
+        }
+    } catch (err) {
+        console.error("Error updating entry:", err);
+        res.status(500).send("Server error");
+    }
+});
+
+
+app.delete('/api/entries/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await pool.query('DELETE FROM entries WHERE id = $1', [id]);
+
+        if (result.rowCount === 0) {
+            return res.status(404).json({ error: 'Entry not found' });
+        }
+
+        res.status(204).send();
+    } catch (err) {
+        console.error("Error deleting entry:", err);
+        res.status(500).send("Server error");
+    }
+});
