@@ -1,22 +1,32 @@
 import React, { useState, useEffect } from "react"; 
-import users from "../users.js";
 import "./PostDailyCardForm.css";
 
-function PostDailyCardForm({ onSave, onDiscard, user }) {
+function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
     const [formData, setFormData] = useState({
         yesterday: "",
         today: "",
-        needsHelp: false,
-        helperName: "",
+        needs_help: false,
+        helper_name: "",
     });
 
     const [isFormValid, setIsFormValid] = useState(false);
 
     useEffect(() => {
+        if (card) {
+            setFormData({
+                yesterday: card.yesterday || "",
+                today: card.today || "",
+                needs_help: card.needs_help || false,
+                helper_name: card.helper_name || "",
+            });
+        }
+    }, [card]);
+
+    useEffect(() => {
         const isTextValid =
             formData.yesterday.trim().length >= 5 &&
             formData.today.trim().length >= 5;
-        const isHelperValid = !formData.needsHelp || (formData.needsHelp && formData.helperName);
+        const isHelperValid = !formData.needs_help || (formData.needs_help && formData.helper_name);
         setIsFormValid(isTextValid && isHelperValid);
     }, [formData]);
 
@@ -31,28 +41,26 @@ function PostDailyCardForm({ onSave, onDiscard, user }) {
     const handleCheckboxChange = () => {
         setFormData((prevData) => ({
             ...prevData,
-            needsHelp: !prevData.needsHelp,
+            needs_help: !prevData.needs_help,
         }));
     };
 
     const handleSelectHelper = (e) => {
         setFormData((prevData) => ({
             ...prevData,
-            helperName: e.target.value,
+            helper_name: e.target.value,
         }));
     };
 
     const handleSave = () => {
         const newCard = {
-            id: Date.now(),
-            user: user,
-            needsHelp: formData.needsHelp,
-            helpAccepted: null,
-            helperName: formData.helperName,
+            username: user,
             yesterday: formData.yesterday,
             today: formData.today,
-        };
-
+            needs_help: formData.needs_help,
+            help_accepted: false,
+            helper_name: formData.helper_name,
+        }
         onSave(newCard);
     };
 
@@ -86,25 +94,25 @@ function PostDailyCardForm({ onSave, onDiscard, user }) {
                 <label>
                     <input
                         type="checkbox"
-                        checked={formData.needsHelp}
+                        checked={formData.needs_help}
                         onChange={handleCheckboxChange}
                     />
                     Need help?
                 </label>
             </div>
 
-            {formData.needsHelp && (
+            {formData.needs_help && (
                 <div className="form-group">
                     <label>Select a Helper:</label>
                     <select
                         name="helperName"
-                        value={formData.helperName}
+                        value={formData.helper_name}
                         onChange={handleSelectHelper}
                     >
                         <option value="">Select User</option>
-                        {users.map((user) => (
-                            <option key={user.name} value={user.name}>
-                                {user.name}
+                        {users?.map((user) => (
+                            <option key={user} value={user}>
+                                {user}
                             </option>
                         ))}
                         <option key="Anybody" value="Anybody">Anybody</option >
