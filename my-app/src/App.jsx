@@ -1,35 +1,34 @@
 import { useState, useEffect } from 'react'
 import axios from "axios"
+import { getUsernames } from "./api"
 
 import Dashboard from './components/Dashboard';
 import LoginPage from './components/LoginPage';
 
-const backgroundStyle = {
-  backgroundImage: 'url(https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqj4BxwxEmsGtIxv2gjDxu-6B4cUZ-VdsvKg&s)',
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
-  height: '100vh',
-  width: '100%'
-}
-
 function App() {
   const [respone, setRespone] = useState("");
   const [currentUser, setCurrentUser] = useState("");
+  const [users, setUsers] = useState(null)
 
   const fetchAPI = async () => {
     const respone = await axios.get("http://localhost:8080/api")
-    console.log("hi")
     setRespone(respone.data)
   }
 
+  const fetchUsers = async () => {
+    const users = await getUsernames()
+    setUsers(users)
+  }
+
   useEffect(() => {
-    fetchAPI()
+    fetchAPI(),
+    fetchUsers()
   }, []);
 
   useEffect(() => {
     const stored = localStorage.getItem("currentUser");
     if (stored) {
-      setCurrentUser(stored); 
+      setCurrentUser(stored);
     }
   }, []);
 
@@ -40,9 +39,9 @@ function App() {
 
 
   return (
-    <div style={backgroundStyle}>
+    <div>
       {currentUser ? (
-        <Dashboard user={currentUser} onLogout={handleLogout} />
+        <Dashboard user={currentUser} onLogout={handleLogout} users={users} />
       ) : (
         <LoginPage onLogin={setCurrentUser} />
       )}
