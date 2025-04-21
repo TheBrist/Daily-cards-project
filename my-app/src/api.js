@@ -1,19 +1,49 @@
 const API_BASE = 'http://localhost:8080/api';
 
-// Get all users
-export const getUsers = async () => {
-  const res = await fetch(`${API_BASE}/users`);
+export const getUsernames = async () => {
+  const res = await fetch(`${API_BASE}/usernames`);
   return await res.json();
 };
 
-// Get entries by date
-export const getEntriesByDate = async (date) => {
-  const res = await fetch(`${API_BASE}/entries?date=${date}`);
+export const getUsersPass = async () => {
+  const res = await fetch(`${API_BASE}/userspass`)
+  return await res.json();
+}
+
+export const getEntriesByDate = async (dateObj) => {
+  const date = dateObj.toISOString().split('T')[0]; // 'YYYY-MM-DD'
+  const res = await fetch(`${API_BASE}/entries/${date}`);
   return await res.json();
 };
 
-// Get entries by user and date
 export const getEntriesByUserAndDate = async (userName, date) => {
   const res = await fetch(`${API_BASE}/entries?userName=${userName}&date=${date}`);
   return await res.json();
 };
+
+export const postEntry = async (entry) => {
+  entry.date = new Date().toISOString().split('T')[0];
+  const res = await fetch(`${API_BASE}/entries`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(entry)
+  })
+
+  if (!res.ok) {
+    throw new Error("Failed to post entry");
+  }
+
+  return await res.json();
+};
+
+export const editEntry = async (entryId, updatedEntry) => {
+  await fetch(`${API_BASE}/entries/${entryId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedEntry),
+  });
+}
