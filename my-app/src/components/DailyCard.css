@@ -1,0 +1,175 @@
+/* src/components/DailyCard.css */
+
+.card {
+    background-color: white;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.07);
+    transition: all 0.3s ease;
+    max-width: 600px;
+    width: 100%;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.card-header h3 {
+    margin: 0;
+    font-size: 20px;
+    color: #333;
+}
+
+.status {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.status-okay {
+    background-color: #3aa655;
+}
+
+.status-waiting {
+    background-color: #e0a800;
+}
+
+.status-accepted {
+    background-color: #007bff;
+}
+
+.card-section {
+    margin-bottom: 12px;
+}
+
+.card-section strong {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #555;
+}
+
+.card-section p {
+    margin: 0;
+    color: #444;
+    line-height: 1.5;
+}
+
+.card-section.help {
+    background-color: #fff5f5;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed #ff7a7a;
+}
+
+.help-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.accept-btn,
+.deny-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.accept-btn {
+    background-color: #3aa655;
+    color: white;
+}
+
+.deny-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.card {
+    overflow: hidden;
+    word-wrap: break-word;
+    white-space: normal;
+    max-height: 300px;
+    transition: max-height 0.3s ease-in-out;
+    position: relative;
+}
+
+.card p {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+
+.card-overflow {
+    cursor: pointer;
+}
+
+.card-expand-overlay {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background: rgba(0,0,0,0.6);
+    color: #fff;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border-radius: 4px;
+    pointer-events: none;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    min-height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow-y: auto;
+    padding: 40px 20px;
+    z-index: 1000;
+}
+
+.popup-card {
+    background: white;
+    padding: 20px;
+    max-width: 600px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card {
+    position: relative;
+    padding-bottom: 60px; /* Space for sticky buttons */
+}
+
+.help-actions-sticky {
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 0;
+    background: white;
+    box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+}
