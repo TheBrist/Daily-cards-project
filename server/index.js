@@ -16,7 +16,7 @@ const corsOptions = {
 }
 
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -136,7 +136,6 @@ app.put('/api/entries/:id', async (req, res) => {
         today,
         needs_help,
         helper_name,
-        denied_helpers,
     } = req.body;
 
     try {
@@ -150,7 +149,6 @@ app.put('/api/entries/:id', async (req, res) => {
           needs_help = COALESCE($5, needs_help),
           help_accepted = COALESCE($6, help_accepted),
           helper_name = COALESCE($7, helper_name)
-          denied_helpers = COALESCE($8, denied_helpers)
         WHERE id = $8
         RETURNING *;
       `;
@@ -168,7 +166,6 @@ app.put('/api/entries/:id', async (req, res) => {
           needs_help,
           help_accepted,
           helper_name,
-          denied_helpers,
           Number(id),
       ];
       
