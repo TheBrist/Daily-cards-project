@@ -3,7 +3,7 @@ import DateSelector from "./DateSelector";
 import DailyCard from "./DailyCard";
 import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm";
-import { editEntry, getEntriesByDate, postEntry } from "../api";
+import { deleteEntry, editEntry, getEntriesByDate, postEntry } from "../api";
 
 function Dashboard({ user, onLogout, users }) {
     const [cards, setCards] = useState(null);
@@ -15,6 +15,11 @@ function Dashboard({ user, onLogout, users }) {
     const fetchEntriesByDate = async () => {
         const cards = await getEntriesByDate(selectedDate)
         setCards(cards)
+    }
+
+    const deleteEntryById = async (entryId) => {
+        deleteEntry(entryId);
+        setCards((prev) => prev.filter((c) => c.id !== entryId));
     }
 
     useEffect(() => {
@@ -79,7 +84,7 @@ function Dashboard({ user, onLogout, users }) {
         setIsFormOpen(false);
         fetchEntriesByDate();
     };
-    
+
 
     const handleDiscardCard = () => {
         setIsFormOpen(false);
@@ -132,9 +137,13 @@ function Dashboard({ user, onLogout, users }) {
                             today={card.today}
                             denied_helpers={card.denied_helpers}
                             onEdit={() => {
-                                setEditingCard(card);  // Set the card to be edited
-                                setIsFormOpen(true);   // Open the form
+                                setEditingCard(card);   
+                                setIsFormOpen(true);   
                             }}
+                            onDelete={() => {
+                                deleteEntryById(card.id)
+                            }}
+
                         />
                     ))}
                 </div>
