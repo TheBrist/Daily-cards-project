@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api';
 
 export const getUsernames = async () => {
   const res = await fetch(`${API_BASE}/usernames`);
@@ -39,13 +39,15 @@ export const postEntry = async (entry) => {
 };
 
 export const editEntry = async (entryId, updatedEntry) => {
-  await fetch(`${API_BASE}/entries/${entryId}`, {
+  const res = await fetch(`${API_BASE}/entries/${entryId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedEntry),
   });
+  if(!res.ok) throw new Error("Failed to update entry");
+  return await res.json();
 }
 
 export const deleteEntry = async (entryId) => {
