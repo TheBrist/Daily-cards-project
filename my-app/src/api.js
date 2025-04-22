@@ -47,3 +47,10 @@ export const editEntry = async (entryId, updatedEntry) => {
     body: JSON.stringify(updatedEntry),
   });
 }
+
+export const deleteEntry = async (entryId) => {
+  const res = await fetch(`${API_BASE}/entries/${entryId}`, {
+    method: 'DELETE'
+  });
+  if (!res.ok) throw new Error("Failed to delete entry");
+};
