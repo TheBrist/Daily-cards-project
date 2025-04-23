@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from "axios"
-import { getUsernames } from "./api"
+import { getUsernames, testAPI } from "./api"
 
 import Dashboard from './components/Dashboard';
 import LoginPage from './components/LoginPage';
@@ -15,7 +15,13 @@ function App() {
     setUsers(users)
   }
 
+  const testAPI = async () => {
+    const test = await testAPI()
+    console.log(test)
+  }
+
   useEffect(() => {
+    testAPI(),
     fetchUsers()
   }, []);
 

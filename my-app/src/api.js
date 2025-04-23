@@ -1,10 +1,14 @@
 const API_BASE = import.meta.env.VITE_API_BASE ;
 
 export const getUsernames = async () => {
-  console.log(`${API_BASE} API_BASE IS`)
   const res = await fetch(`${API_BASE}/usernames`);
   return await res.json();
 };
+
+export const testAPI = async () => {
+  const req = await fetch("10.10.10.1/usernames")
+  return await res.json();
+}
 
 export const getUsersPass = async () => {
   const res = await fetch(`${API_BASE}/userspass`)
