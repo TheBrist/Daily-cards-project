@@ -5,17 +5,19 @@ const PORT = process.env.PORT || 8080;
 
 const whitelist = ['https://www.yoursite.com', 'http://127.0.0.1:5500', 'http://localhost:5173'];
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (whitelist.indexOf(origin) !== -1 || !origin) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    // origin: (origin, callback) => {
+    //     if (whitelist.indexOf(origin) !== -1 || !origin) {
+    //         callback(null, true);
+    //     } else {
+    //         callback(new Error('Not allowed by CORS'));
+    //     }
+    // },
+
+    origin: '*',
     optionsSuccessStatus: 200
 }
 
-const app = express();
+const app = express(corsOptions);
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
