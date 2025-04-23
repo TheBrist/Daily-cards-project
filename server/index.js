@@ -1,7 +1,7 @@
 const pool = require('./db/connection')
 const express = require('express');
 const cors = require('cors');
-const PORT = process.env.PORT || 8080;
+const f = process.env.PORT || 8080;
 
 const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148'];
 const corsOptions = {
@@ -17,9 +17,9 @@ const corsOptions = {
     optionsSuccessStatus: 200
 };
 
-app.use(cors(corsOptions));
+const app = express();
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
