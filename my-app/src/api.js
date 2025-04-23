@@ -1,6 +1,7 @@
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:8080/api';
+const API_BASE = import.meta.env.VITE_API_BASE ;
 
 export const getUsernames = async () => {
+  console.log(`${API_BASE} API_BASE IS`)
   const res = await fetch(`${API_BASE}/usernames`);
   return await res.json();
 };

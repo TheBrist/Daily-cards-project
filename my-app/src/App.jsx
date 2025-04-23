@@ -6,14 +6,9 @@ import Dashboard from './components/Dashboard';
 import LoginPage from './components/LoginPage';
 
 function App() {
-  const [respone, setRespone] = useState("");
+  const [respone, etRespone] = useState("");
   const [currentUser, setCurrentUser] = useState("");
   const [users, setUsers] = useState(null)
-
-  const fetchAPI = async () => {
-    const respone = await axios.get("http://localhost:8080/api")
-    setRespone(respone.data)
-  }
 
   const fetchUsers = async () => {
     const users = await getUsernames()
@@ -21,7 +16,6 @@ function App() {
   }
 
   useEffect(() => {
-    fetchAPI(),
     fetchUsers()
   }, []);
 

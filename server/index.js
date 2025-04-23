@@ -20,9 +20,9 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+console.log(process.env);
 
-
-app.get('/api', (req, res) => {
+app.get('/', (req, res) => {
     res.send('Backend is running')
 });
 
@@ -31,7 +31,7 @@ app.listen(PORT, () => {
 })
 
 
-app.get('/api/userspass', async (req, res) => {
+app.get('/userspass', async (req, res) => {
     try {
         const result = await pool.query('SELECT * FROM users');
         res.json(result.rows);
@@ -41,7 +41,7 @@ app.get('/api/userspass', async (req, res) => {
     }
 });
 
-app.get('/api/usernames', async (req, res) => {
+app.get('/usernames', async (req, res) => {
     try {
         const result = await pool.query('SELECT name FROM users');
         const usernames = result.rows.map(row => row.name);
@@ -52,7 +52,7 @@ app.get('/api/usernames', async (req, res) => {
     }
 });
 
-app.get('/api/users/:name', async (req, res) => {
+app.get('/users/:name', async (req, res) => {
     const { name } = req.params;
     try {
         const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
@@ -68,7 +68,7 @@ app.get('/api/users/:name', async (req, res) => {
 });
 
 
-app.get('/api/entries/:date', async (req, res) => {
+app.get('/entries/:date', async (req, res) => {
     const { date } = req.params;
     if (!date) return res.status(400).send("Date is required");
 
@@ -88,7 +88,7 @@ app.get('/api/entries/:date', async (req, res) => {
 });
 
 
-app.post('/api/entries', async (req, res) => {
+app.post('/entries', async (req, res) => {
     const {
         username,
         yesterday,
@@ -126,7 +126,7 @@ app.post('/api/entries', async (req, res) => {
     }
 });
 
-app.put('/api/entries/:id', async (req, res) => {
+app.put('/entries/:id', async (req, res) => {
     const { id } = req.params;
     const {
         date,
@@ -184,7 +184,7 @@ app.put('/api/entries/:id', async (req, res) => {
 });
 
 
-app.delete('/api/entries/:id', async (req, res) => {
+app.delete('/entries/:id', async (req, res) => {
     const { id } = req.params;
 
     try {
