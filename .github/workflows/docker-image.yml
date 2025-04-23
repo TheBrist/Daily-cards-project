@@ -20,24 +20,27 @@ jobs:
       - name: Decode and save service account key
         run: echo "${{ secrets.GCP_SA_KEY }}" | base64 -d > ${{ github.workspace }}/key.json
 
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ github.workspace }}/key.json
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ github.workspace }}/key.json
-          export_default_credentials: true
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker
         run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Build & push frontend
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./frontend
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./my-app
           docker push $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest
 
       - name: Build & push backend
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./backend
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./server
           docker push $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest
 
       - name: Deploy frontend to Cloud Run
