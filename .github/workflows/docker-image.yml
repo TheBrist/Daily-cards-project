@@ -1,0 +1,53 @@
+on:
+  push:
+    branches: [ main ] # or dev, etc.
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      REGION: ${{ secrets.REGION }}
+      FRONTEND_SERVICE: ${{ secrets.FRONTEND_SERVICE_NAME }}
+      BACKEND_SERVICE: ${{ secrets.BACKEND_SERVICE_NAME }}
+      FRONT_REPO: ${{ secrets.FRONT_REPO }}
+      BACK_REPO: ${{secrets.BACK_REPO}}
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build & push frontend
+        run: |
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./my-app
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest
+
+      - name: Build & push backend
+        run: |
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./server
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest
+
+      - name: Deploy frontend to Cloud Run
+        run: |
+          gcloud run deploy $FRONTEND_SERVICE \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest \
+            --region=$REGION --platform=managed --allow-unauthenticated
+
+      - name: Deploy backend to Cloud Run
+        run: |
+          gcloud run deploy $BACKEND_SERVICE \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest \
+            --region=$REGION --platform=managed --allow-unauthenticated
