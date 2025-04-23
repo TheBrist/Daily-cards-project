@@ -1,7 +1,7 @@
 const pool = require('./db/connection')
 const express = require('express');
 const cors = require('cors');
-const f = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
 const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148'];
 const corsOptions = {
@@ -29,8 +29,8 @@ app.get('/', (req, res) => {
     res.send('Backend is running')
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`)
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`)
 })
 
 
