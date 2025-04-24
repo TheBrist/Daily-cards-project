@@ -2,15 +2,24 @@ import React, { useEffect, useState } from "react";
 import DateSelector from "./DateSelector";
 import DailyCard from "./DailyCard";
 import "./Dashboard.css";
-import PostDailyCardForm from "./PostDailyCardForm";
-import { deleteEntry, editEntry, getEntriesByDate, postEntry } from "../api";
+import PostDailyCardForm from "./PostDailyCardForm"; ``
+import { deleteEntry, editEntry, getEntriesByDate, postEntry, getUsernames } from "../api";
 
-function Dashboard({ user, onLogout, users }) {
+function Dashboard({ user, onLogout }) {
     const [cards, setCards] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editingCard, setEditingCard] = useState(null);
+    const [users, setUsers] = useState(null)
 
+    const fetchUsers = async () => {
+        const users = await getUsernames()
+        setUsers(users)
+    }
+
+    useEffect(() => {
+        fetchUsers()
+    }, []);
 
     const fetchEntriesByDate = async () => {
         const cards = await getEntriesByDate(selectedDate)
@@ -137,8 +146,8 @@ function Dashboard({ user, onLogout, users }) {
                             today={card.today}
                             denied_helpers={card.denied_helpers}
                             onEdit={() => {
-                                setEditingCard(card);   
-                                setIsFormOpen(true);   
+                                setEditingCard(card);
+                                setIsFormOpen(true);
                             }}
                             onDelete={() => {
                                 deleteEntryById(card.id)

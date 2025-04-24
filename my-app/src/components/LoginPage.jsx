@@ -1,34 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { getUsersPass } from "../api"
+import {  login } from "../api"
 import "./LoginPage.css";
 
 function LoginPage({ onLogin }) {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [users, setUsers] = useState(null)
-
-  const setUsersPass = async () => {
-    const users = await getUsersPass()
-    setUsers(users)
-  }
-
-  useEffect(() => {
-    setUsersPass()
-  }, []);
-
-  const handleSubmit = (e) => {
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = users.find(
-      (u) => u.name === name && u.pass === password
-    );
-    if (user) {
+    try {
+      const data = await login({ name, password }); // wait for the response
+      localStorage.setItem("token", data.token);
       localStorage.setItem("currentUser", name);
       onLogin(name);
-    } else {
+    } catch (err) {
+      console.error("Login error:", err);
       setError("Invalid username or password");
     }
   };
+  
 
   return (
     <div className="login-container">

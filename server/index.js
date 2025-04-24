@@ -1,9 +1,15 @@
 const pool = require('./db/connection')
 const express = require('express');
 const cors = require('cors');
-const port = process.env.PORT || 8080;
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
-const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148'];
+const port = process.env.PORT || 8080;
+const SECRET = process.env.JWT_SECRET;
+
+
+const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148', 'http://localhost:5173'];
 const corsOptions = {
     origin: (origin, callback) => {
         if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -23,8 +29,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-console.log(process.env);
-
 app.get('/', (req, res) => {
     res.send('Backend is running')
 });
@@ -33,18 +37,55 @@ app.listen(port, () => {
     console.log(`Server listening on port ${port}`)
 })
 
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1]; // "Bearer TOKEN"
 
-app.get('/userspass', async (req, res) => {
+    if (!token) return res.sendStatus(401);
+
+    jwt.verify(token, SECRET, (err, user) => {
+        if (err) return res.sendStatus(403);
+        req.user = user;
+        next();
+    });
+}
+
+app.post('/login', async (req, res) => {
+    const { name, password } = req.body;
+
     try {
-        const result = await pool.query('SELECT * FROM users');
-        res.json(result.rows);
-    } catch (error) {
-        console.error('Error fetching users with passwords:', error);
-        res.status(500).json({ error: 'Server error fetching users' });
+        const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
+
+        if (result.rows.length === 0) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const user = result.rows[0];
+
+        const isPasswordValid = await bcrypt.compare(password, user.pass); // if password is hashed
+        if (!isPasswordValid) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
+        res.json({ token });
+    } catch (err) {
+        console.error('Login error:', err);
+        res.status(500).json({ error: 'Server error during login' });
     }
 });
 
-app.get('/usernames', async (req, res) => {
+// app.get('/userspass', async (req, res) => {
+//     try {
+//         const result = await pool.query('SELECT * FROM users');
+//         res.json(result.rows);
+//     } catch (error) {
+//         console.error('Error fetching users with passwords:', error);
+//         res.status(500).json({ error: 'Server error fetching users' });
+//     }
+// });
+
+app.get('/usernames', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT name FROM users');
         const usernames = result.rows.map(row => row.name);
@@ -55,7 +96,7 @@ app.get('/usernames', async (req, res) => {
     }
 });
 
-app.get('/users/:name', async (req, res) => {
+app.get('/users/:name', authenticateToken, async (req, res) => {
     const { name } = req.params;
     try {
         const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
@@ -71,7 +112,7 @@ app.get('/users/:name', async (req, res) => {
 });
 
 
-app.get('/entries/:date', async (req, res) => {
+app.get('/entries/:date', authenticateToken, async (req, res) => {
     const { date } = req.params;
     if (!date) return res.status(400).send("Date is required");
 
@@ -91,9 +132,8 @@ app.get('/entries/:date', async (req, res) => {
 });
 
 
-app.post('/entries', async (req, res) => {
+app.post('/entries', authenticateToken, async (req, res) => {
     const {
-        username,
         yesterday,
         today,
         needs_help,
@@ -112,7 +152,7 @@ app.post('/entries', async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            username,
+            req.user.name,
             yesterday,
             today,
             needs_help,
@@ -120,6 +160,7 @@ app.post('/entries', async (req, res) => {
             helper_name,
             date,
         ];
+
 
         const result = await pool.query(query, values);
         res.status(201).json(result.rows[0]);
@@ -129,12 +170,11 @@ app.post('/entries', async (req, res) => {
     }
 });
 
-app.put('/entries/:id', async (req, res) => {
+app.put('/entries/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const {
         date,
         help_accepted,
-        username,
         yesterday,
         today,
         needs_help,
@@ -162,7 +202,7 @@ app.put('/entries/:id', async (req, res) => {
       }
       
       const values = [
-          username,
+          req.user.name,
           dateObj ? dateObj.toISOString().split("T")[0] : null,
           yesterday,
           today,
@@ -174,7 +214,6 @@ app.put('/entries/:id', async (req, res) => {
       
             
         const result = await pool.query(query, values);
-        console.log(values);
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Entry not found' });
         } else {
@@ -187,7 +226,7 @@ app.put('/entries/:id', async (req, res) => {
 });
 
 
-app.delete('/entries/:id', async (req, res) => {
+app.delete('/entries/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"; 
+import React, { useState, useEffect } from "react";
 import "./PostDailyCardForm.css";
 
 function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
@@ -110,7 +110,7 @@ function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
                         onChange={handleSelectHelper}
                     >
                         <option value="">Select User</option>
-                        {users?.map((user) => (
+                        {users?.filter((name) => name !== user).map((user) => (
                             <option key={user} value={user}>
                                 {user}
                             </option>
