@@ -59,7 +59,7 @@ function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
             today: formData.today,
             needs_help: formData.needs_help,
             help_accepted: false,
-            helper_name: formData.helper_name || "",
+            helper_name: formData.helper_name === "" ? null : formData.helper_name,
         }
         onSave(newCard);
     };
