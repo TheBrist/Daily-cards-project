@@ -1,4 +1,5 @@
 const token = localStorage.getItem('token');
+require('dotenv').config();
 const API_BASE = import.meta.env.VITE_API_BASE ;
 
 export const login = async (credentials) => {
