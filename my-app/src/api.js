@@ -1,5 +1,5 @@
 const token = localStorage.getItem('token');
-const API_BASE = import.meta.env.VITE_API_BASE ;
+const API_BASE = import.meta.env.VITE_API_BASE || "https://backend-daily-cards-418901622719.me-west1.run.app";
 
 export const login = async (credentials) => {
   const res = await fetch(`${API_BASE}/login`, {
