@@ -15,6 +15,8 @@ jobs:
       BACKEND_SERVICE: ${{ secrets.BACKEND_SERVICE_NAME }}
       FRONT_REPO: ${{ secrets.FRONT_REPO }}
       BACK_REPO: ${{secrets.BACK_REPO}}
+      WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT_EMAIL: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
 
     steps:
       - name: Checkout repo
@@ -25,8 +27,8 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           token_format: 'access_token'
-          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
-          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
           
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
@@ -50,10 +52,16 @@ jobs:
         run: |
           gcloud run deploy $FRONTEND_SERVICE \
             --image=$REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest \
-            --region=$REGION --platform=managed --allow-unauthenticated
+            --region=$REGION
+            --platform=managed
+            --allow-unauthenticated
+            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy $BACKEND_SERVICE \
             --image=$REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest \
-            --region=$REGION --platform=managed --allow-unauthenticated
+            --region=$REGION 
+            --platform=managed
+            --allow-unauthenticated
+            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
