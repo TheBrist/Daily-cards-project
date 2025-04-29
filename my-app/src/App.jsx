@@ -3,7 +3,7 @@ import Dashboard from './components/Dashboard';
 import LoginPage from './components/LoginPage';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState("");
+  const [currentUser, setCurrentUser] = useState(null);
 
 
   useEffect(() => {

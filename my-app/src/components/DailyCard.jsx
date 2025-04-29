@@ -52,7 +52,7 @@ function DailyCard({ username, yesterday, today, needs_help, helper_name, help_a
 
     const handleDeny = () => {
         setStatusKey("waiting");
-        onHelpResponded(false);
+        onHelpResponded(false, false, username);
     };
 
     const isCurrentUserBeingAsked = needs_help && ((helper_name === "Anybody" && currentUser !== username) || currentUser === helper_name);
@@ -60,7 +60,7 @@ function DailyCard({ username, yesterday, today, needs_help, helper_name, help_a
     return (
         <>
             <div
-                className={`card card-overflow"`}
+                className={`card card-overflow`}
                 style={{ borderLeft: `6px solid ${statusColors[statusKey]}` }}
                 onClick={() => setShowPopup(true)}
                 ref={cardRef}

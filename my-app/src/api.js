@@ -25,6 +25,7 @@ export const logout = () => {
 };
 
 export const getUsernames = async () => {
+  const token = getToken();
   const res = await fetch(`${API_BASE}/usernames`, {
     headers: {
       Authorization: `Bearer ${token}`,

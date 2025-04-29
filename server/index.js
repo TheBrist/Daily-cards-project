@@ -75,15 +75,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// app.get('/userspass', async (req, res) => {
-//     try {
-//         const result = await pool.query('SELECT * FROM users');
-//         res.json(result.rows);
-//     } catch (error) {
-//         console.error('Error fetching users with passwords:', error);
-//         res.status(500).json({ error: 'Server error fetching users' });
-//     }
-// });
 
 app.get('/usernames', authenticateToken, async (req, res) => {
     try {
