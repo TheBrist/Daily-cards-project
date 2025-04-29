@@ -52,16 +52,16 @@ jobs:
         run: |
           gcloud run deploy $FRONTEND_SERVICE \
             --image=$REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest \
-            --region=$REGION
-            --platform=managed
-            --allow-unauthenticated
+            --region=$REGION \
+            --platform=managed \
+            --allow-unauthenticated \
             --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Deploy backend to Cloud Run
         run: |
           gcloud run deploy $BACKEND_SERVICE \
             --image=$REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest \
-            --region=$REGION 
-            --platform=managed
-            --allow-unauthenticated
-            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --region=$REGION \
+            --platform=managed \
+            --allow-unauthenticated \
+            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }} \
