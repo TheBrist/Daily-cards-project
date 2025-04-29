@@ -29,7 +29,7 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
     res.send('Backend is running')
 });
 
@@ -50,7 +50,7 @@ function authenticateToken(req, res, next) {
     });
 }
 
-app.post('/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { name, password } = req.body;
 
     try {
@@ -76,7 +76,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-app.get('/usernames', authenticateToken, async (req, res) => {
+app.get('/api/usernames', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query('SELECT name FROM users');
         const usernames = result.rows.map(row => row.name);
@@ -87,7 +87,7 @@ app.get('/usernames', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/users/:name', authenticateToken, async (req, res) => {
+app.get('/api/users/:name', authenticateToken, async (req, res) => {
     const { name } = req.params;
     try {
         const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
@@ -103,7 +103,7 @@ app.get('/users/:name', authenticateToken, async (req, res) => {
 });
 
 
-app.get('/entries/:date', authenticateToken, async (req, res) => {
+app.get('/api/entries/:date', authenticateToken, async (req, res) => {
     const { date } = req.params;
     if (!date) return res.status(400).send("Date is required");
 
@@ -123,7 +123,7 @@ app.get('/entries/:date', authenticateToken, async (req, res) => {
 });
 
 
-app.post('/entries', authenticateToken, async (req, res) => {
+app.post('/api/entries', authenticateToken, async (req, res) => {
     const {
         yesterday,
         today,
@@ -161,7 +161,7 @@ app.post('/entries', authenticateToken, async (req, res) => {
     }
 });
 
-app.put('/entries/:id', authenticateToken, async (req, res) => {
+app.put('/api/entries/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const {
         date,
@@ -217,7 +217,7 @@ app.put('/entries/:id', authenticateToken, async (req, res) => {
 });
 
 
-app.delete('/entries/:id', authenticateToken, async (req, res) => {
+app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
 
     try {
