@@ -10,13 +10,13 @@ jobs:
       contents: read
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-      REGION: ${{ secrets.REGION }}
+      REGION: ${{ vars.REGION }}
       FRONTEND_SERVICE: ${{ secrets.FRONTEND_SERVICE_NAME }}
       BACKEND_SERVICE: ${{ secrets.BACKEND_SERVICE_NAME }}
       FRONT_REPO: ${{ secrets.FRONT_REPO }}
       BACK_REPO: ${{secrets.BACK_REPO}}
-      WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
-      WIF_SERVICE_ACCOUNT_EMAIL: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+      WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
+      WIF_SERVICE_ACCOUNT_EMAIL: ${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
     steps:
       - name: Checkout repo
@@ -55,7 +55,7 @@ jobs:
             --region=$REGION
             --platform=managed
             --allow-unauthenticated
-            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Deploy backend to Cloud Run
         run: |
@@ -64,4 +64,4 @@ jobs:
             --region=$REGION 
             --platform=managed
             --allow-unauthenticated
-            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
