@@ -13,6 +13,7 @@ function LoginPage({ onLogin }) {
       const data = await login({ name, password }); // wait for the response
       localStorage.setItem("token", data.token);
       localStorage.setItem("currentUser", name);
+      console.log('button login')
       onLogin(name);
     } catch (err) {
       console.error("Login error:", err);
@@ -40,7 +41,7 @@ function LoginPage({ onLogin }) {
           required
         />
         {error && <p className="error-msg">{error}</p>}
-        <button type="submit">Login</button>
+        <input type="submit">Login</input>
       </form>
     </div>
   );
