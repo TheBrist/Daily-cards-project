@@ -1,10 +1,13 @@
 on:
   push:
     branches: [ main ] # or dev, etc.
-
+  workflow_dispatch:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
     env:
       PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ secrets.REGION }}
@@ -16,12 +19,15 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-        
+
       - name: Authenticate to Google Cloud
+        id: auth
         uses: google-github-actions/auth@v1
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
-
+          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+          
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
