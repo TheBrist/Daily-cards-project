@@ -43,9 +43,9 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, SECRET, (err, user) => {
+    jwt.verify(token, SECRET, (err, username) => {
         if (err) return res.sendStatus(403);
-        req.user = user;
+        req.username = username;
         next();
     });
 }
@@ -66,7 +66,7 @@ app.get('/api/login', async (req, res) => {
         //     user = await pool.query('SELECT * FROM users WHERE name = $1', [username]);
         // }
 
-        const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
+        const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         
         res.json({ name: username, token: token });
     } catch (err) {
