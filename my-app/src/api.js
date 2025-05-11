@@ -1,5 +1,5 @@
 const token = localStorage.getItem('token');
-const API_BASE = import.meta.env.VITE_API_BASE || "http://34.0.69.148/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://fentanyl.ondutyschedulers.com/api";
 
 export const login = async (credentials) => {
   const res = await fetch(`${API_BASE}/login`, {
