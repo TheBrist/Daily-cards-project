@@ -43,9 +43,9 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, SECRET, (err, username) => {
+    jwt.verify(token, SECRET, (err, email) => {
         if (err) return res.sendStatus(403);
-        req.username = username;
+        req.email = email;
         next();
     });
 }
