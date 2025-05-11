@@ -59,34 +59,34 @@ app.get('/api/login', async (req, res) => {
         await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
         user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
     }
-
+    console.log(`Email: ${email}\nUser: ${user}`)
     res.json(user.rows[0].name);
 })
 
-app.post('/api/login', async (req, res) => {
-    const { name, password } = req.body;
+// app.post('/api/login', async (req, res) => {
+//     const { name, password } = req.body;
 
-    try {
-        const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
+//     try {
+//         const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
 
-        if (result.rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
+//         if (result.rows.length === 0) {
+//             return res.status(401).json({ error: 'Invalid credentials' });
+//         }
 
-        const user = result.rows[0];
+//         const user = result.rows[0];
 
-        const isPasswordValid = await bcrypt.compare(password, user.pass);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
+//         const isPasswordValid = await bcrypt.compare(password, user.pass);
+//         if (!isPasswordValid) {
+//             return res.status(401).json({ error: 'Invalid credentials' });
+//         }
 
-        const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
-        res.json({ token });
-    } catch (err) {
-        console.error('Login error:', err);
-        res.status(500).json({ error: 'Server error during login' });
-    }
-});
+//         const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
+//         res.json({ token });
+//     } catch (err) {
+//         console.error('Login error:', err);
+//         res.status(500).json({ error: 'Server error during login' });
+//     }
+// });
 
 
 app.get('/api/usernames', authenticateToken, async (req, res) => {
