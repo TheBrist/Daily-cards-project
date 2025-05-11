@@ -59,12 +59,12 @@ app.get('/api/login', async (req, res) => {
 
         const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
-        // let user = await pool.query('SELECT * FROM users WHERE name = $1', [username]);
+        let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
-        // if (!user.rowCount) {
-        //     await pool.query('INSERT INTO users (name) VALUES ($1)', [username]);
-        //     user = await pool.query('SELECT * FROM users WHERE name = $1', [username]);
-        // }
+        if (!user.rowCount) {
+            await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
+            user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
+        }
 
         const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         
@@ -76,36 +76,10 @@ app.get('/api/login', async (req, res) => {
 });
 
 
-// app.post('/api/login', async (req, res) => {
-//     const { name, password } = req.body;
-
-//     try {
-//         const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
-
-//         if (result.rows.length === 0) {
-//             return res.status(401).json({ error: 'Invalid credentials' });
-//         }
-
-//         const user = result.rows[0];
-
-//         const isPasswordValid = await bcrypt.compare(password, user.pass);
-//         if (!isPasswordValid) {
-//             return res.status(401).json({ error: 'Invalid credentials' });
-//         }
-
-//         const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
-//         res.json({ token });
-//     } catch (err) {
-//         console.error('Login error:', err);
-//         res.status(500).json({ error: 'Server error during login' });
-//     }
-// });
-
-
 app.get('/api/usernames', authenticateToken, async (req, res) => {
     try {
-        const result = await pool.query('SELECT name FROM users');
-        const usernames = result.rows.map(row => row.name);
+        const result = await pool.query('SELECT username FROM users');
+        const usernames = result.rows.map(row => row.username);
         res.json(usernames);
     } catch (error) {
         console.error('Error fetching usernames:', error);
@@ -113,10 +87,10 @@ app.get('/api/usernames', authenticateToken, async (req, res) => {
     }
 });
 
-app.get('/api/users/:name', authenticateToken, async (req, res) => {
-    const { name } = req.params;
+app.get('/api/users/:username', authenticateToken, async (req, res) => {
+    const { username } = req.params;
     try {
-        const result = await pool.query('SELECT * FROM users WHERE name = $1', [name]);
+        const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
         if (result.rows.length > 0) {
             res.json(result.rows[0]);
         } else {
@@ -127,6 +101,8 @@ app.get('/api/users/:name', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error fetching user' });
     }
 });
+
+app.post()
 
 
 app.get('/api/entries/:date', authenticateToken, async (req, res) => {
@@ -169,7 +145,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            req.user.name,
+            req.username,
             yesterday,
             today,
             needs_help,
@@ -219,7 +195,7 @@ app.put('/api/entries/:id', authenticateToken, async (req, res) => {
         }
 
         const values = [
-            req.user.name,
+            req.username,
             dateObj ? dateObj.toISOString().split("T")[0] : null,
             yesterday,
             today,
