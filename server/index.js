@@ -51,7 +51,7 @@ function authenticateToken(req, res, next) {
 }
 
 app.get('/api/login', async (req, res) => {
-    const email = req.headers.email.split(':')[1];
+    const email = req.headers.email;
 
     let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
 
