@@ -52,12 +52,12 @@ function authenticateToken(req, res, next) {
 
 app.get('/api/login', async (req, res) => {
     try {
-        const email = req.headers.email?.split(':')[1]; 
-        if (!email) {
+        const username = req.headers.email?.split(':')[1]; 
+        if (!username) {
             return res.status(400).json({ error: 'Malformed email' });
         }
 
-        const username = email?.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
+        //const username = email?.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
         // let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
