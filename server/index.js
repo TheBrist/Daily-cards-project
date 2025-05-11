@@ -59,12 +59,12 @@ app.get('/api/login', async (req, res) => {
 
         const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
-        let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
+        // let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
-        if (!user.rowCount) {
-            await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
-            user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
-        }
+        // if (!user.rowCount) {
+        //     await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
+        //     user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
+        // }
 
         const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         
