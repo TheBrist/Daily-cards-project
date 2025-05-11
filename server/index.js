@@ -67,7 +67,7 @@ app.get('/api/login', async (req, res) => {
         // }
 
         //const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
-        
+        const token = 'test';
         res.json({ name: username, token: token });
     } catch (err) {
         console.error('Login DB error:', err);
