@@ -68,8 +68,8 @@ app.get('/api/login', extractUser, async (req, res) => {
     let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
 
     if (!user.rowCount) {
-        await db.query('INSERT INTO users (name) VALUES ($1)', [email]);
-        user = await db.query('SELECT * FROM users WHERE name = $1', [email]);
+        await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
+        user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
     }
 
     res.json(user.rows[0].name);
