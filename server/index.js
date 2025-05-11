@@ -62,8 +62,17 @@ function extractUser(req, res, next) {
     next();
 }
 
-app.get('/api/login', extractUser, (req, res) => {
-    res.json({ email: req.user.email })
+app.get('/api/login', extractUser, async (req, res) => {
+    const email = req.email;
+
+    let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
+
+    if (!user.rowCount) {
+        await db.query('INSERT INTO users (name) VALUES ($1)', [email]);
+        user = await db.query('SELECT * FROM users WHERE name = $1', [email]);
+    }
+
+    res.json(user.rows[0].name);
 })
 
 app.post('/api/login', async (req, res) => {

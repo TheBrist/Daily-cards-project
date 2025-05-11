@@ -17,10 +17,10 @@ function App() {
   }, []);
 
   const googleLogin = async () => {
-    const user = await newLogin();
-    if(user)  {
-      setCurrentUser(user);
-    }
+    const userdata = await newLogin();
+    if(userdata.email)  {
+      setCurrentUser(userdata.email);
+    } 
   }
 
   const handleLogout = () => {
