@@ -50,20 +50,8 @@ function authenticateToken(req, res, next) {
     });
 }
 
-function extractUser(req, res, next) {
-    const emailHeader = req.headers['x-goog-authenticated-user-email'];
-
-    if (!emailHeader) {
-        return res.status(401).json({ error: 'Not authenticated via IAP' });
-    }
-
-    const email = emailHeader.split(':')[1];
-    req.user = { email };
-    next();
-}
-
-app.get('/api/login', extractUser, async (req, res) => {
-    const email = req.email;
+app.get('/api/login', async (req, res) => {
+    const email = req.headers.email.split(':')[1];
 
     let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
 
