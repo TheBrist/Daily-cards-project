@@ -43,9 +43,9 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.sendStatus(401);
 
-    jwt.verify(token, SECRET, (err, email) => {
+    jwt.verify(token, SECRET, (err, username) => {
         if (err) return res.sendStatus(403);
-        req.email = email;
+        req.username = username;
         next();
     });
 }
@@ -57,7 +57,7 @@ app.get('/api/login', async (req, res) => {
             return res.status(400).json({ error: 'Malformed email' });
         }
 
-        const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
+        const username = email?.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
         // let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
