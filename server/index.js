@@ -57,7 +57,7 @@ function extractUser(req, res, next) {
         return res.status(401).json({ error: 'Not authenticated via IAP' });
     }
 
-    const email = emailHeader.split(':')[1]; // remove "accounts.google.com:" prefix
+    const email = emailHeader.split(':')[1];
     req.user = { email };
     next();
 }

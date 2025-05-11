@@ -17,10 +17,11 @@ export const login = async (credentials) => {
 };
 
 export const newLogin = async () => {
-  const res = await fetch(`${API_BASE}/login`)
+  const res = await fetch(`https://fentanyl.ondutyschedulers.com?gcp-iap-mode=IDENTITY`)
 
   if(!res.ok) throw new Error("Login failed");
 
+  console.log(res);
   return await res.json();
 }
 
