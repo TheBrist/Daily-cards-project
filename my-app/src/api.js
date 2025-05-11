@@ -17,7 +17,7 @@ export const login = async (credentials) => {
 };
 
 export const newLogin = async () => {
-  const userdata = await fetch(`https://fentanyl.ondutyschedulers.com/?gcp-iap-mode=IDENTITY`)
+  const userdata = await (await fetch(`https://fentanyl.ondutyschedulers.com/?gcp-iap-mode=IDENTITY`)).json();
 
   if(!userdata.ok) throw new Error("Login failed");
   console.log(userdata);
