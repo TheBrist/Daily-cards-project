@@ -53,12 +53,12 @@ function authenticateToken(req, res, next) {
 app.get('/api/login', async (req, res) => {
     const email = req.headers.email?.split(':')[1];
 
-    let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
+    //let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
 
-    if (!user.rowCount) {
-        await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
-        user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
-    }
+    //if (!user.rowCount) {
+      //  await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
+        //user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
+    //}
     console.log(`Email: ${email}\nUser: ${user}`)
     res.json(email);
 })
