@@ -52,10 +52,11 @@ function authenticateToken(req, res, next) {
 
 app.get('/api/login', async (req, res) => {
     try {
-        const username = req.headers.email?.split(':')[1]; 
-        if (!username) {
-            return res.status(400).json({ error: 'Malformed email' });
-        }
+        console.log('HEADERS:', req.headers);
+        // const username = req.headers.email?.split(':')[1]; 
+        // if (!username) {
+        //     return res.status(400).json({ error: 'Malformed email' });
+        // }
 
         //const username = email?.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
@@ -67,8 +68,7 @@ app.get('/api/login', async (req, res) => {
         // }
 
         //const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
-        const token = 'test';
-        res.json({ name: username, token: token });
+        res.json({ name: "testname", token: "testtoken" });
     } catch (err) {
         console.error('Login DB error:', err);
         res.status(503).json({ error: 'Login failed' });
