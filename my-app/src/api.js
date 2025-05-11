@@ -16,6 +16,14 @@ export const login = async (credentials) => {
   return data;
 };
 
+export const newLogin = async () => {
+  const res = await fetch(`${API_BASE}/login`)
+
+  if(!res.ok) throw new Error("Login failed");
+
+  return await res.json();
+}
+
 export const getToken = () => {
   return localStorage.getItem("token");
 };

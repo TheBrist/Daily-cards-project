@@ -50,6 +50,22 @@ function authenticateToken(req, res, next) {
     });
 }
 
+function extractUser(req, res, next) {
+    const emailHeader = req.headers['x-goog-authenticated-user-email'];
+
+    if (!emailHeader) {
+        return res.status(401).json({ error: 'Not authenticated via IAP' });
+    }
+
+    const email = emailHeader.split(':')[1]; // remove "accounts.google.com:" prefix
+    req.user = { email };
+    next();
+}
+
+app.get('/api/login', extractUser, (req, res) => {
+    res.json({ email: req.user.email })
+})
+
 app.post('/api/login', async (req, res) => {
     const { name, password } = req.body;
 
@@ -62,7 +78,7 @@ app.post('/api/login', async (req, res) => {
 
         const user = result.rows[0];
 
-        const isPasswordValid = await bcrypt.compare(password, user.pass); 
+        const isPasswordValid = await bcrypt.compare(password, user.pass);
         if (!isPasswordValid) {
             return res.status(401).json({ error: 'Invalid credentials' });
         }
@@ -187,23 +203,23 @@ app.put('/api/entries/:id', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
 
-      const dateObj = date ? new Date(date) : null;
-      if (dateObj) {
-          dateObj.setUTCDate(dateObj.getUTCDate() + 1); // Add one day in UTC
-      }
-      
-      const values = [
-          req.user.name,
-          dateObj ? dateObj.toISOString().split("T")[0] : null,
-          yesterday,
-          today,
-          needs_help,
-          help_accepted,
-          helper_name,
-          Number(id),
-      ];
-      
-            
+        const dateObj = date ? new Date(date) : null;
+        if (dateObj) {
+            dateObj.setUTCDate(dateObj.getUTCDate() + 1); // Add one day in UTC
+        }
+
+        const values = [
+            req.user.name,
+            dateObj ? dateObj.toISOString().split("T")[0] : null,
+            yesterday,
+            today,
+            needs_help,
+            help_accepted,
+            helper_name,
+            Number(id),
+        ];
+
+
         const result = await pool.query(query, values);
         if (result.rows.length === 0) {
             res.status(404).json({ error: 'Entry not found' });
