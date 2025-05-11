@@ -66,7 +66,7 @@ app.get('/api/login', async (req, res) => {
         //     user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
         // }
 
-        const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
+        //const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         
         res.json({ name: username, token: token });
     } catch (err) {
