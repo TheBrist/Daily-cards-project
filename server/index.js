@@ -59,7 +59,7 @@ app.get('/api/login', async (req, res) => {
       //  await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
         //user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
     //}
-    console.log(`Email: ${email}\nUser: ${user}`)
+    console.log(`Email: ${email}`)
     res.json(email);
 })
 
