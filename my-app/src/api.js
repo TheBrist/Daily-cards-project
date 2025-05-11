@@ -26,8 +26,11 @@ export const newLogin = async () => {
       "email": userdata["email"]
     }
   })
+  
+  const data = await res.json();
+  localStorage.setItem("token", data.token);
 
-  return await res.json();
+  return data.name;
 }
 
 export const getToken = () => {

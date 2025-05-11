@@ -51,17 +51,30 @@ function authenticateToken(req, res, next) {
 }
 
 app.get('/api/login', async (req, res) => {
-    const email = req.headers.email?.split(':')[1];
+    try {
+        const email = req.headers.email?.split(':')[1]; 
+        if (!email) {
+            return res.status(400).json({ error: 'Malformed email' });
+        }
 
-    //let user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
+        const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
-    //if (!user.rowCount) {
-      //  await pool.query('INSERT INTO users (name) VALUES ($1)', [email]);
-        //user = await pool.query('SELECT * FROM users WHERE name = $1', [email]);
-    //}
-    console.log(`Email: ${email}`)
-    res.json(email);
-})
+        // let user = await pool.query('SELECT * FROM users WHERE name = $1', [username]);
+
+        // if (!user.rowCount) {
+        //     await pool.query('INSERT INTO users (name) VALUES ($1)', [username]);
+        //     user = await pool.query('SELECT * FROM users WHERE name = $1', [username]);
+        // }
+
+        const token = jwt.sign({ id: user.id, name: user.name }, SECRET, { expiresIn: '2h' });
+        
+        res.json({ name: user.rows[0].name, token: token });
+    } catch (err) {
+        console.error('Login DB error:', err);
+        res.status(503).json({ error: 'Login failed' });
+    }
+});
+
 
 // app.post('/api/login', async (req, res) => {
 //     const { name, password } = req.body;

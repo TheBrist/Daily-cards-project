@@ -17,10 +17,10 @@ function App() {
   }, []);
 
   const googleLogin = async () => {
-    const userdata = await newLogin();
-    if(userdata.email)  {
-      setCurrentUser(userdata.email);
-    } 
+    const username = await newLogin();
+    if (username) {
+      setCurrentUser(username);
+    }
   }
 
   const handleLogout = () => {
@@ -32,11 +32,7 @@ function App() {
 
   return (
     <div>
-      {currentUser ? (
-        <Dashboard user={currentUser} onLogout={handleLogout} />
-      ) : (
-        <LoginPage onLogin={setCurrentUser} />
-      )}
+      <Dashboard user={currentUser} onLogout={handleLogout} />
     </div>
   );
 }
