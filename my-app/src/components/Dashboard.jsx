@@ -10,11 +10,11 @@ function Dashboard({ user, onLogout }) {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editingCard, setEditingCard] = useState(null);
-    const [users, setUsers] = useState(null)
+    const [usernames, setUsernames] = useState(null)
 
     const fetchUsers = async () => {
-        const users = await getUsernames()
-        setUsers(users)
+        const usernames = await getUsernames()
+        setUsernames(usernames)
     }
 
     useEffect(() => {
@@ -125,7 +125,7 @@ function Dashboard({ user, onLogout }) {
                         onSave={handleSaveCard}
                         onDiscard={handleDiscardCard}
                         user={user}
-                        users={users}
+                        usernames={usernames}
                         card={editingCard}
                     />
                 )}
