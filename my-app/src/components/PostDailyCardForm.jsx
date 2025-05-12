@@ -54,9 +54,10 @@ function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
 
     const handleSave = () => {
         let temp = localStorage.getItem("currentUser");
-        
+        let temp2 = temp.match(/"name":"(.*?)"/);
+        const username = temp2 ? temp2[1] : null;
         const newCard = {
-            username: localStorage.getItem("currentUser"),
+            username: username,
             yesterday: formData.yesterday,
             today: formData.today,
             needs_help: formData.needs_help,
