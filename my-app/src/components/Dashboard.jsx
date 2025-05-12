@@ -16,6 +16,21 @@ function Dashboard({ user, onLogout }) {
         const usernames = await getUsernames()
         setUsernames(usernames)
     }
+    useEffect(() => {
+        const stored = localStorage.getItem("currentUser");
+        if (stored) {
+            setCurrentUser(stored);
+        } else {
+            googleLogin();
+        }
+    }, []);
+
+    const googleLogin = async () => {
+        const username = await newLogin();
+        if (username) {
+            setCurrentUser(username);
+        }
+    }
 
     useEffect(() => {
         fetchUsers()
