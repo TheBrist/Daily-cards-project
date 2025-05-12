@@ -4,35 +4,17 @@ import DailyCard from "./DailyCard";
 import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm"; ``
 import { deleteEntry, editEntry, getEntriesByDate, postEntry, getUsernames } from "../api";
-import { newLogin } from './api';
 
-
-function Dashboard({ onLogout }) {
+function Dashboard({ user, onLogout }) {
     const [cards, setCards] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editingCard, setEditingCard] = useState(null);
-    const [usernames, setUsernames] = useState(null)
-    const [user, setuser] = useState(null);
+    const [users, setUsers] = useState(null)
 
     const fetchUsers = async () => {
-        const usernames = await getUsernames()
-        setUsernames(usernames)
-    }
-    useEffect(() => {
-        const stored = localStorage.getItem("user");
-        if (stored) {
-            setuser(stored);
-        } else {
-            googleLogin();
-        }
-    }, []);
-
-    const googleLogin = async () => {
-        const username = await newLogin();
-        if (username) {
-            setuser(username);
-        }
+        const users = await getUsernames()
+        setUsers(users)
     }
 
     useEffect(() => {
@@ -124,7 +106,7 @@ function Dashboard({ onLogout }) {
                 <span style={{ marginRight: "10px" }}>
                     Logged in as: <b>{user}</b>
                 </span>
-                <button onClick={googleLogin()}>Refresh session</button>
+                <button onClick={googleLogin}>Refresh session</button>
                 <button onClick={onLogout}>Logout</button>
             </div>
 
@@ -144,7 +126,7 @@ function Dashboard({ onLogout }) {
                         onSave={handleSaveCard}
                         onDiscard={handleDiscardCard}
                         user={user}
-                        usernames={usernames}
+                        users={users}
                         card={editingCard}
                     />
                 )}
@@ -157,7 +139,7 @@ function Dashboard({ onLogout }) {
                             needs_help={card.needs_help}
                             help_accepted={card.help_accepted}
                             helper_name={card.helper_name}
-                            user={user}
+                            currentUser={user}
                             onHelpResponded={(accepted, fromAnyone, actual_helper) =>
                                 handleHelpResponse(card.id, accepted, fromAnyone, actual_helper)
                             }
