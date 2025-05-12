@@ -54,7 +54,7 @@ function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
 
     const handleSave = () => {
         const newCard = {
-            username: user,
+            username: localStorage.getItem("currentUser"),
             yesterday: formData.yesterday,
             today: formData.today,
             needs_help: formData.needs_help,
