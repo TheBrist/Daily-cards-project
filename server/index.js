@@ -53,7 +53,7 @@ function authenticateToken(req, res, next) {
 app.get('/api/login', async (req, res) => {
     try {
         const email = req.headers.email?.split(':')[1]; 
-        if (!username) {
+        if (!email) {
             return res.status(400).json({ error: 'Malformed email' });
         }
 
