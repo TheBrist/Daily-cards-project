@@ -34,7 +34,7 @@ function App() {
 
   return (
     <div>
-      <Dashboard onLogout={handleLogout} onRefreshSession={googleLogin} />
+      <Dashboard user={username} onLogout={handleLogout} onRefreshSession={googleLogin} />
     </div>
   );
 }

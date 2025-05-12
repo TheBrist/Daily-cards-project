@@ -5,7 +5,7 @@ import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm"; ``
 import { deleteEntry, editEntry, getEntriesByDate, postEntry, getUsernames } from "../api";
 
-function Dashboard({ user, onLogout }) {
+function Dashboard({ user, onLogout, onSessionRefresh }) {
     const [cards, setCards] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
@@ -106,7 +106,7 @@ function Dashboard({ user, onLogout }) {
                 <span style={{ marginRight: "10px" }}>
                     Logged in as: <b>{user}</b>
                 </span>
-                <button onClick={googleLogin}>Refresh session</button>
+                <button onClick={onSessionRefresh}>Refresh session</button>
                 <button onClick={onLogout}>Logout</button>
             </div>
 
