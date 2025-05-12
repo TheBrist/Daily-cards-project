@@ -29,6 +29,7 @@ export const newLogin = async () => {
   
   const data = await res.json();
   localStorage.setItem("token", data.token);
+  localStorage.setItem("currentUser", data.name);
 
   return data.name;
 }

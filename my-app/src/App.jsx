@@ -32,7 +32,7 @@ function App() {
 
   return (
     <div>
-      <Dashboard user={currentUser} onLogout={handleLogout} />
+      <Dashboard user={localStorage.getItem("currentUser")} onLogout={handleLogout} />
     </div>
   );
 }
