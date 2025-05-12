@@ -4,6 +4,8 @@ import DailyCard from "./DailyCard";
 import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm"; ``
 import { deleteEntry, editEntry, getEntriesByDate, postEntry, getUsernames } from "../api";
+import { newLogin } from './api';
+
 
 function Dashboard({ onLogout }) {
     const [cards, setCards] = useState(null);

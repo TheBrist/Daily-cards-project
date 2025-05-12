@@ -1,7 +1,4 @@
-import { useState, useEffect } from 'react'
 import Dashboard from './components/Dashboard';
-import LoginPage from './components/LoginPage';
-import { newLogin } from './api';
 
 function App() {
   const handleLogout = () => {
