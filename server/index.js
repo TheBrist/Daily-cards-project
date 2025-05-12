@@ -51,7 +51,6 @@ function authenticateToken(req, res, next) {
 }
 
 app.get('/api/login', async (req, res) => {
-    let user;
     try {
         const email = req.headers.email?.split(':')[1];
         if (!email) {
@@ -59,16 +58,16 @@ app.get('/api/login', async (req, res) => {
         }
 
         const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
-        user = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-        // if (!user.rowCount) {
-        //     await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
-        //     user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
-        // }
+        const existing = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+        if (existing.rowCount === 0) {
+            await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
+        }
 
         const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         res.json({ name: username, token: token });
     } catch (err) {
-        console.error('Login DB error:', `error: ${err} user: ${user}`);
+        console.error('Login DB error:', `error: ${err}`);
         res.status(503).json({ error: 'Login failed' });
     }
 });
