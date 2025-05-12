@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./PostDailyCardForm.css";
 
 function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
+    console.log(`user: ${user}`)
     const [formData, setFormData] = useState({
         yesterday: "",
         today: "",

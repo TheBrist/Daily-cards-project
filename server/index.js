@@ -52,19 +52,19 @@ function authenticateToken(req, res, next) {
 
 app.get('/api/login', async (req, res) => {
     try {
-        let username = req.headers.email?.split(':')[1]; 
+        const email = req.headers.email?.split(':')[1]; 
         if (!username) {
             return res.status(400).json({ error: 'Malformed email' });
         }
 
-        username = username.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
+        const username = email.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
-        // let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
+        let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
-        // if (!user.rowCount) {
-        //     await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
-        //     user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
-        // }
+        if (!user.rowCount) {
+            await pool.query('INSERT INTO users (username, email) VALUES ($1, $2)', [username, email]);
+            user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
+        }
 
         const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
         res.json({ name: username, token: token });
