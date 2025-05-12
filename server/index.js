@@ -52,13 +52,12 @@ function authenticateToken(req, res, next) {
 
 app.get('/api/login', async (req, res) => {
     try {
-        console.log('HEADERS:', req.headers);
-        // const username = req.headers.email?.split(':')[1]; 
-        // if (!username) {
-        //     return res.status(400).json({ error: 'Malformed email' });
-        // }
+        let username = req.headers.email?.split(':')[1]; 
+        if (!username) {
+            return res.status(400).json({ error: 'Malformed email' });
+        }
 
-        //const username = email?.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
+        username = username.replace(/^xd\./, '').replace(/@gcp\.idf\.il$/, '');
 
         // let user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
 
@@ -67,8 +66,8 @@ app.get('/api/login', async (req, res) => {
         //     user = await pool.query('SELECT username FROM users WHERE username = $1', [username]);
         // }
 
-        //const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
-        res.json({ name: "testname", token: "testtoken" });
+        const token = jwt.sign({ name: username }, SECRET, { expiresIn: '2h' });
+        res.json({ name: username, token: token });
     } catch (err) {
         console.error('Login DB error:', err);
         res.status(503).json({ error: 'Login failed' });
@@ -101,8 +100,6 @@ app.get('/api/users/:username', authenticateToken, async (req, res) => {
         res.status(500).json({ error: 'Server error fetching user' });
     }
 });
-
-app.post()
 
 
 app.get('/api/entries/:date', authenticateToken, async (req, res) => {
