@@ -5,21 +5,22 @@ import "./Dashboard.css";
 import PostDailyCardForm from "./PostDailyCardForm"; ``
 import { deleteEntry, editEntry, getEntriesByDate, postEntry, getUsernames } from "../api";
 
-function Dashboard({ user, onLogout }) {
+function Dashboard({ onLogout }) {
     const [cards, setCards] = useState(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [editingCard, setEditingCard] = useState(null);
     const [usernames, setUsernames] = useState(null)
+    const [user, setuser] = useState(null);
 
     const fetchUsers = async () => {
         const usernames = await getUsernames()
         setUsernames(usernames)
     }
     useEffect(() => {
-        const stored = localStorage.getItem("currentUser");
+        const stored = localStorage.getItem("user");
         if (stored) {
-            setCurrentUser(stored);
+            setuser(stored);
         } else {
             googleLogin();
         }
@@ -28,7 +29,7 @@ function Dashboard({ user, onLogout }) {
     const googleLogin = async () => {
         const username = await newLogin();
         if (username) {
-            setCurrentUser(username);
+            setuser(username);
         }
     }
 
@@ -121,6 +122,7 @@ function Dashboard({ user, onLogout }) {
                 <span style={{ marginRight: "10px" }}>
                     Logged in as: <b>{user}</b>
                 </span>
+                <button onClick={googleLogin()}>Refresh session</button>
                 <button onClick={onLogout}>Logout</button>
             </div>
 
@@ -153,7 +155,7 @@ function Dashboard({ user, onLogout }) {
                             needs_help={card.needs_help}
                             help_accepted={card.help_accepted}
                             helper_name={card.helper_name}
-                            currentUser={user}
+                            user={user}
                             onHelpResponded={(accepted, fromAnyone, actual_helper) =>
                                 handleHelpResponse(card.id, accepted, fromAnyone, actual_helper)
                             }

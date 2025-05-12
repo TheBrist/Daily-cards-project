@@ -4,25 +4,6 @@ import LoginPage from './components/LoginPage';
 import { newLogin } from './api';
 
 function App() {
-  const [currentUser, setCurrentUser] = useState(null);
-
-
-  useEffect(() => {
-    const stored = localStorage.getItem("currentUser");
-    if (stored) {
-      setCurrentUser(stored);
-    } else {
-      googleLogin();
-    }
-  }, []);
-
-  const googleLogin = async () => {
-    const username = await newLogin();
-    if (username) {
-      setCurrentUser(username);
-    }
-  }
-
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("token");
@@ -34,7 +15,7 @@ function App() {
 
   return (
     <div>
-      <Dashboard user={localStorage.getItem("currentUser")} onLogout={handleLogout} />
+      <Dashboard onLogout={handleLogout} />
     </div>
   );
 }
