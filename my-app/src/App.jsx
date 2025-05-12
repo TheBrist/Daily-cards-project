@@ -28,7 +28,7 @@ function App() {
     localStorage.removeItem("token");
     setCurrentUser(null);
   
-    window.location.href = "https://accounts.google.com/Logout?continue=https://fentanyl.ondutyschedulers.com";
+    window.location.href = "https://accounts.google.com/logout";
   };
 
 
