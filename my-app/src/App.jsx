@@ -21,6 +21,8 @@ function App() {
     if (username) {
       setCurrentUser(username);
     }
+
+    window.location.reload();
   }
 
   const handleLogout = () => {
