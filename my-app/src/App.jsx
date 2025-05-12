@@ -7,7 +7,6 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem("currentUser");
     localStorage.removeItem("token");
-    setCurrentUser(null);
   
     window.location.href = "https://accounts.google.com/logout";
   };
