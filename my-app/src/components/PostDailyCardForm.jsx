@@ -57,7 +57,7 @@ function PostDailyCardForm({ onSave, onDiscard, user, users, card }) {
         let temp2 = temp.match(/"name":"(.*?)"/);
         const username = temp2 ? temp2[1] : null;
         const newCard = {
-            username: username,
+            username: "nrapoport53",
             yesterday: formData.yesterday,
             today: formData.today,
             needs_help: formData.needs_help,
