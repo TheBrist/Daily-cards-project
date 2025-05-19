@@ -135,7 +135,7 @@ function Dashboard({ user, onLogout, onSessionRefresh }) {
                     {cards?.map((card) => (
                         <DailyCard
                             key={card.id}
-                            username={card.username?.name}
+                            username={card.username}
                             needs_help={card.needs_help}
                             help_accepted={card.help_accepted}
                             helper_name={card.helper_name}

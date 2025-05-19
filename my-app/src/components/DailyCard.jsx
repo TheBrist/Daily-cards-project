@@ -69,8 +69,6 @@ function DailyCard({ username, yesterday, today, needs_help, helper_name, help_a
                 <div className="card-header">
                     <h3>{username}</h3>
                     <span className={`status status-${statusKey}`}>{statusLabels[statusKey]}</span>
-
-                    {currentUser === username && (
                         <div className="edit-icon-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                             <button
                                 className="edit-button"
@@ -99,8 +97,7 @@ function DailyCard({ username, yesterday, today, needs_help, helper_name, help_a
                             >
                                 🗑️ Delete
                             </button>
-                        </div>
-                    )}
+                        </div>             
                 </div>
 
                 <div className="card-section">
