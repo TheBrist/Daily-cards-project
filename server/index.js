@@ -140,7 +140,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            req.username,
+            req.username.name,
             yesterday,
             today,
             needs_help,
