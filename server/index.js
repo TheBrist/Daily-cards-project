@@ -141,7 +141,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            username,
+            username.name,
             yesterday,
             today,
             needs_help,
