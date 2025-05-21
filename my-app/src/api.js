@@ -1,5 +1,5 @@
 const token = localStorage.getItem('token');
-const API_BASE = import.meta.env.VITE_API_BASE || "https://fentanyl.ondutyschedulers.com/api";
+const API_BASE = import.meta.env.VITE_API_BASE || "https://ronyaskin.ondutyschedulers.com/api";
 
 export const login = async (credentials) => {
   const res = await fetch(`${API_BASE}/login`, {
@@ -17,7 +17,7 @@ export const login = async (credentials) => {
 };
 
 export const newLogin = async () => {
-  const req = await fetch(`https://fentanyl.ondutyschedulers.com/?gcp-iap-mode=IDENTITY`);
+  const req = await fetch(`https://ronyaskin.ondutyschedulers.com/?gcp-iap-mode=IDENTITY`);
   const userdata = await req.json();
   console.log(userdata);
 
