@@ -1,8 +1,7 @@
 on:
   push:
-    branches: [ main ]
+    branches: [ main ] # or dev, etc.
   workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -15,7 +14,7 @@ jobs:
       FRONTEND_SERVICE: ${{ vars.FRONTEND_SERVICE_NAME }}
       BACKEND_SERVICE: ${{ vars.BACKEND_SERVICE_NAME }}
       FRONT_REPO: ${{ vars.FRONT_REPO }}
-      BACK_REPO: ${{ vars.BACK_REPO }}
+      BACK_REPO: ${{vars.BACK_REPO}}
       WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
       WIF_SERVICE_ACCOUNT_EMAIL: ${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
@@ -30,16 +29,7 @@ jobs:
           token_format: 'access_token'
           workload_identity_provider: ${{ env.WIF_PROVIDER }}
           service_account: ${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
-          project_id: ${{ env.PROJECT_ID }}
-          create_credentials_file: true
-          export_environment_variables: true
-          cleanup_credentials: true
-          access_token_lifetime: 3600s
-          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
-          retries: 3
-          backoff: 250
-          id_token_include_email: false
-
+          
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
@@ -50,30 +40,25 @@ jobs:
 
       - name: Build & push frontend
         run: |
-          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/$(echo "${{ env.FRONT_REPO }}" | tr -d '\r')/frontend:latest"
-          docker build -t "$IMAGE_TAG" ./my-app
-          docker push "$IMAGE_TAG"
-  
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./my-app
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest
       - name: Build & push backend
         run: |
-          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/$(echo "${{ env.BACK_REPO }}" | tr -d '\r')/backend:latest"
-          docker build -t "$IMAGE_TAG" ./server
-          docker push "$IMAGE_TAG"
-          
+          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./server
+          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest
       - name: Deploy frontend to Cloud Run
         run: |
-          gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
-            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest \
-            --region=${{ env.REGION }} \
+          gcloud run deploy $FRONTEND_SERVICE \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest \
+            --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
-
+            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud run deploy ${{ env.BACKEND_SERVICE }} \
-            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest \
-            --region=${{ env.REGION }} \
+          gcloud run deploy $BACKEND_SERVICE \
+            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest \
+            --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --service-account=${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }} \
