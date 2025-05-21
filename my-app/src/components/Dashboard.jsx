@@ -67,6 +67,7 @@ function Dashboard({ user, onLogout, onSessionRefresh }) {
             denied_helpers: accepted
                 ? originalCard.denied_helpers || []
                 : [...(originalCard.denied_helpers || []), user],
+            username: cardDataWithoutId.username
         };
 
 

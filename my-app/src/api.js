@@ -96,7 +96,6 @@ export const postEntry = async (entry) => {
 
 export const editEntry = async (entryId, updatedEntry) => {
   const token = getToken();
-  updatedEntry.username = localStorage.getItem("currentUser");
   const res = await fetch(`${API_BASE}/entries/${entryId}`, {
     method: "PUT",
     headers: {
