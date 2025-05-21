@@ -122,6 +122,7 @@ app.get('/api/entries/:date', authenticateToken, async (req, res) => {
 
 app.post('/api/entries', authenticateToken, async (req, res) => {
     const {
+        username,
         yesterday,
         today,
         needs_help,
@@ -140,7 +141,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            localStorage.getItem("currentUser"),
+            username,
             yesterday,
             today,
             needs_help,
