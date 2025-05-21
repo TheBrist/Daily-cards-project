@@ -130,6 +130,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         helper_name,
         date,
     } = req.body;
+    let new_username = username.replace(/^"(.*)"$/, '$1');
 
     try {
         const query = `
@@ -141,7 +142,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            username,
+            new_username,
             yesterday,
             today,
             needs_help,

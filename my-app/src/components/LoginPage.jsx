@@ -12,6 +12,10 @@ function LoginPage({ onLogin }) {
     try {
       const data = await login({ name, password }); // wait for the response
       localStorage.setItem("token", data.token);
+      if(name.startsWith('"')){
+        const new_username = name.replace(/^"(.*)"$/, '$1');
+        setName(new_username)
+      }
       localStorage.setItem("currentUser", name);
       onLogin(name);
     } catch (err) {
