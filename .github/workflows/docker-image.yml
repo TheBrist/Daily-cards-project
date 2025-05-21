@@ -50,14 +50,16 @@ jobs:
 
       - name: Build & push frontend
         run: |
-          docker build -t "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest" ./my-app
-          docker push "${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest"
-      
+          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/$(echo "${{ env.FRONT_REPO }}" | tr -d '\r')/frontend:latest"
+          docker build -t "$IMAGE_TAG" ./my-app
+          docker push "$IMAGE_TAG"
+  
       - name: Build & push backend
         run: |
-          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest ./server
-          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest
-
+          IMAGE_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/$(echo "${{ env.BACK_REPO }}" | tr -d '\r')/backend:latest"
+          docker build -t "$IMAGE_TAG" ./server
+          docker push "$IMAGE_TAG"
+          
       - name: Deploy frontend to Cloud Run
         run: |
           gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
