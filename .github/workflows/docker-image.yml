@@ -46,32 +46,32 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker
-        run: gcloud auth configure-docker $REGION-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
       - name: Build & push frontend
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./my-app
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest ./my-app
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest
 
       - name: Build & push backend
         run: |
-          docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./server
-          docker push $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest
+          docker build -t ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest ./server
+          docker push ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest
 
       - name: Deploy frontend to Cloud Run
         run: |
-          gcloud run deploy $FRONTEND_SERVICE \
-            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest \
-            --region=$REGION \
+          gcloud run deploy ${{ env.FRONTEND_SERVICE }} \
+            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.FRONT_REPO }}/frontend:latest \
+            --region=${{ env.REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=$WIF_SERVICE_ACCOUNT_EMAIL
+            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud run deploy $BACKEND_SERVICE \
-            --image=$REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest \
-            --region=$REGION \
+          gcloud run deploy ${{ env.BACKEND_SERVICE }} \
+            --image=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.BACK_REPO }}/backend:latest \
+            --region=${{ env.REGION }} \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=$WIF_SERVICE_ACCOUNT_EMAIL
+            --service-account=${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
