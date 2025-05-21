@@ -9,7 +9,7 @@ const port = process.env.PORT || 8080;
 const SECRET = process.env.JWT_SECRET;
 
 
-const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148', 'http://localhost:5173', 'http://fentanyl.ondutyschedulers.com/'];
+const whitelist = ['https://frontend-daily-cards-418901622719.me-west1.run.app', 'http://34.0.69.148', 'http://localhost:5173', 'http://ronyaskin.ondutyschedulers.com/'];
 const corsOptions = {
     origin: (origin, callback) => {
         if (whitelist.indexOf(origin) !== -1 || !origin) {
