@@ -1,7 +1,8 @@
 on:
   push:
-    branches: [ main ] # or dev, etc.
+    branches: [ main ]
   workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -14,7 +15,7 @@ jobs:
       FRONTEND_SERVICE: ${{ vars.FRONTEND_SERVICE_NAME }}
       BACKEND_SERVICE: ${{ vars.BACKEND_SERVICE_NAME }}
       FRONT_REPO: ${{ vars.FRONT_REPO }}
-      BACK_REPO: ${{vars.BACK_REPO}}
+      BACK_REPO: ${{ vars.BACK_REPO }}
       WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
       WIF_SERVICE_ACCOUNT_EMAIL: ${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
@@ -27,13 +28,22 @@ jobs:
         uses: google-github-actions/auth@v1
         with:
           token_format: 'access_token'
-          workload_identity_provider: $WIF_PROVIDER
-          service_account: $WIF_SERVICE_ACCOUNT_EMAIL
-          
+          workload_identity_provider: ${{ env.WIF_PROVIDER }}
+          service_account: ${{ env.WIF_SERVICE_ACCOUNT_EMAIL }}
+          project_id: ${{ env.PROJECT_ID }}
+          create_credentials_file: true
+          export_environment_variables: true
+          cleanup_credentials: true
+          access_token_lifetime: 3600s
+          access_token_scopes: https://www.googleapis.com/auth/cloud-platform
+          retries: 3
+          backoff: 250
+          id_token_include_email: false
+
       - name: Set up Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
         with:
-          project_id: $PROJECT_ID
+          project_id: ${{ env.PROJECT_ID }}
 
       - name: Configure Docker
         run: gcloud auth configure-docker $REGION-docker.pkg.dev
@@ -64,4 +74,4 @@ jobs:
             --region=$REGION \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=$WIF_SERVICE_ACCOUNT_EMAIL \
+            --service-account=$WIF_SERVICE_ACCOUNT_EMAIL
