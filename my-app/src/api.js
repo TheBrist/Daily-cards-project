@@ -79,6 +79,7 @@ export const getEntriesByUserAndDate = async (userName, date) => {
 
 export const postEntry = async (entry) => {
   entry.date = new Date().toISOString().split('T')[0];
+  entry.username = localStorage.getItem("currentUser");
   const token = getToken();
   const res = await fetch(`${API_BASE}/entries`, {
     method: "POST",
