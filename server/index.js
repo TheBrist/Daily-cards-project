@@ -141,7 +141,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
         RETURNING *;
       `;
         const values = [
-            username.name,
+            username,
             yesterday,
             today,
             needs_help,
@@ -162,6 +162,7 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
 app.put('/api/entries/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const {
+        username,
         date,
         help_accepted,
         yesterday,
@@ -191,7 +192,7 @@ app.put('/api/entries/:id', authenticateToken, async (req, res) => {
         }
 
         const values = [
-            req.username,
+            username,
             dateObj ? dateObj.toISOString().split("T")[0] : null,
             yesterday,
             today,
