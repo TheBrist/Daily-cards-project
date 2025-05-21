@@ -1,7 +1,7 @@
 on:
-  push:
-    branches: [ main ] # or dev, etc.
-  workflow_dispatch:
+ push:
+  branches: [ main ] # or dev, etc.
+ workflow_dispatch:
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -9,12 +9,12 @@ jobs:
       id-token: write
       contents: read
     env:
-      PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
+      PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
       REGION: ${{ vars.REGION }}
-      FRONTEND_SERVICE: ${{ vars.FRONTEND_SERVICE_NAME }}
-      BACKEND_SERVICE: ${{ vars.BACKEND_SERVICE_NAME }}
-      FRONT_REPO: ${{ vars.FRONT_REPO }}
-      BACK_REPO: ${{vars.BACK_REPO}}
+      FRONTEND_SERVICE: ${{ secrets.FRONTEND_SERVICE_NAME }}
+      BACKEND_SERVICE: ${{ secrets.BACKEND_SERVICE_NAME }}
+      FRONT_REPO: ${{ secrets.FRONT_REPO }}
+      BACK_REPO: ${{secrets.BACK_REPO}}
       WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
       WIF_SERVICE_ACCOUNT_EMAIL: ${{ vars.WIF_SERVICE_ACCOUNT_EMAIL }}
 
@@ -42,7 +42,6 @@ jobs:
         run: |
           docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest ./my-app
           docker push $REGION-docker.pkg.dev/$PROJECT_ID/$FRONT_REPO/frontend:latest
-          
       - name: Build & push backend
         run: |
           docker build -t $REGION-docker.pkg.dev/$PROJECT_ID/$BACK_REPO/backend:latest ./server
