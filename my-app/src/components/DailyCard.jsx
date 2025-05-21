@@ -69,35 +69,35 @@ function DailyCard({ username, yesterday, today, needs_help, helper_name, help_a
                 <div className="card-header">
                     <h3>{username}</h3>
                     <span className={`status status-${statusKey}`}>{statusLabels[statusKey]}</span>
-                        <div className="edit-icon-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                            <button
-                                className="edit-button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onEdit();
-                                }}
-                            >
-                                ✏️ Edit
-                            </button>
+                    {currentUser === username && (<div className="edit-icon-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                        <button
+                            className="edit-button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onEdit();
+                            }}
+                        >
+                            ✏️ Edit
+                        </button>
 
-                            <button
-                                className="delete-button"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDelete();
-                                }}
-                                style={{
-                                    marginTop: '5px',
-                                    color: '#000',
-                                    border: 'none',
-                                    padding: '4px 8px',
-                                    borderRadius: '4px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                🗑️ Delete
-                            </button>
-                        </div>             
+                        <button
+                            className="delete-button"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onDelete();
+                            }}
+                            style={{
+                                marginTop: '5px',
+                                color: '#000',
+                                border: 'none',
+                                padding: '4px 8px',
+                                borderRadius: '4px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            🗑️ Delete
+                        </button>
+                    </div>)}
                 </div>
 
                 <div className="card-section">
