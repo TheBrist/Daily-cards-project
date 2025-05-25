@@ -45,7 +45,7 @@ jobs:
 
       - name: Deploy frontend to Cloud Run
         run: |
-          gcloud run deploy "${{ secrets.FRONTEND_SERVICE }}" \
+          gcloud run deploy "${{ secrets.FRONTEND_SERVICE_NAME }}" \
             --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.FRONT_REPO }}/frontend:latest" \
             --region="${{ secrets.REGION }}" \
             --platform=managed \
@@ -54,7 +54,7 @@ jobs:
 
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud run deploy "${{ secrets.BACKEND_SERVICE }}" \
+          gcloud run deploy "${{ secrets.BACKEND_SERVICE_NAME }}" \
             --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.BACK_REPO }}/backend:latest" \
             --region="${{ secrets.REGION }}" \
             --platform=managed \
