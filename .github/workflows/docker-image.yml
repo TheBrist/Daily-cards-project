@@ -42,18 +42,19 @@ jobs:
 
       - name: Deploy frontend to Cloud Run
         run: |
-          gcloud run deploy ${{ secrets.FRONTEND_SERVICE }} \
-            --image=${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.FRONT_REPO }}/frontend:latest \
-            --region=${{ secrets.REGION }} \
+          gcloud run deploy "${{ secrets.FRONTEND_SERVICE }}" \
+            --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.FRONT_REPO }}/frontend:latest" \
+            --region="${{ secrets.REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --service-account="${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}"
 
       - name: Deploy backend to Cloud Run
         run: |
-          gcloud run deploy ${{ secrets.BACKEND_SERVICE }} \
-            --image=${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.BACK_REPO }}/backend:latest \
-            --region=${{ secrets.REGION }} \
+          gcloud run deploy "${{ secrets.BACKEND_SERVICE }}" \
+            --image="${{ secrets.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/${{ secrets.BACK_REPO }}/backend:latest" \
+            --region="${{ secrets.REGION }}" \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}
+            --service-account="${{ secrets.WIF_SERVICE_ACCOUNT_EMAIL }}"
+
