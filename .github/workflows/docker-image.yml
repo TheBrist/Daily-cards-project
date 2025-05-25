@@ -13,7 +13,10 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-
+      - name: Debug Secrets
+        run: |
+          echo "FRONTEND_SERVICE: ${{ secrets.FRONTEND_SERVICE }}"
+          echo "BACKEND_SERVICE: ${{ secrets.BACKEND_SERVICE }}"
       - name: Authenticate to Google Cloud
         id: auth
         uses: google-github-actions/auth@v1
